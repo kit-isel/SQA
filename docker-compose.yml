@@ -2,10 +2,10 @@ version: '3.8'
 services:
   flask:
     build: ./flask
-    image: SQA-flask
-    container_name: SQA-flask
+    image: flask-sqa
+    container_name: flask-sqa
     ports:
-      - 5050:5000
+      - 5051:5000
     volumes:
       - ./flask:/usr/src/app
     depends_on:
@@ -14,7 +14,7 @@ services:
   mysql:
     image: mysql:9.0
     platform: linux/arm64
-    container_name: SQA-mysql
+    container_name: mysql-sqa
     ports:
       - 3306:3306
     restart: always
