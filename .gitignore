@@ -1,2 +1,4 @@
 *.env
 mysql/data/
+*.pyc
+flask/app/__pycache__/
