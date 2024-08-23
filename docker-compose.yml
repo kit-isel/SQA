@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  flask:
+    build: ./flask
+    image: SQA-flask
+    container_name: SQA-flask
+    ports:
+      - 5050:5000
+    volumes:
+      - ./flask:/usr/src/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+  mysql:
+    image: mysql:9.0
+    platform: linux/arm64
+    container_name: SQA-mysql
+    ports:
+      - 3306:3306
+    restart: always
+    env_file:
+      - ./mysql/.env
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
