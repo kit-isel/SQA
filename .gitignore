@@ -2,3 +2,4 @@
 mysql/data/
 *.pyc
 flask/app/__pycache__/
+flask/config.py
