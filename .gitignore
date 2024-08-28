@@ -1,5 +1,5 @@
 *.env
-mysql/data/
+db/data/
 *.pyc
 flask/app/__pycache__/
 flask/config.py
