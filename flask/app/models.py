@@ -1,19 +1,20 @@
-from sqlalchemy import Boolean, ForeignKey, Column, Integer, String
+from sqlalchemy import Boolean, ForeignKey, Column, Integer, VARCHAR as Varchar, TEXT as Text
 from sqlalchemy.dialects.mysql import TIMESTAMP as Timestamp
+from sqlalchemy.sql.functions import current_timestamp
 from sqlalchemy.orm import relationship
 from app.database import Base
+
+TITLE_LENGTH = 255
 
 class Question(Base):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(50))
-    description = Column(String(240))
-    number_of_likes = Column(Integer, default=0)
+    title = Column(Varchar(TITLE_LENGTH))
+    description = Column(Text)
     status = Column(Boolean, default=False)
-    created_at = Column(Timestamp)
-
-    answers = relationship("Answer", back_populates="question")
+    deleted = Column(Boolean, default=False)
+    created_at = Column(Timestamp, default=current_timestamp())
 
     def __init__(self, title, description):
         self.title = title
@@ -24,11 +25,10 @@ class Answer(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     question_id = Column(Integer, ForeignKey("questions.id"))
-    description = Column(String(240))
-    status = Column(Boolean, default=False)
+    description = Column(Text)
+    is_best = Column(Boolean, default=False)
+    deleted = Column(Boolean, default=False)
     created_at = Column(Timestamp)
-
-    question = relationship("Question", back_populates="answers")
 
     def __init__(self, question_id, description):
         self.question_id = question_id
