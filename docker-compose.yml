@@ -20,6 +20,8 @@ services:
     restart: always
     env_file:
       - ./mysql/.env
+    environment:
+      TZ: 'Asia/Tokyo'
     volumes:
       - ./mysql/conf.d:/etc/mysql/conf.d
       - ./mysql/data:/var/lib/mysql
