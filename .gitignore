@@ -1,5 +1,5 @@
 *.env
 db/data/
 *.pyc
-flask/app/__pycache__/
-flask/config.py
+backend/app/__pycache__/
+backend/config.py
