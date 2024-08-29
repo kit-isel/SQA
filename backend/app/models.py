@@ -1,10 +1,18 @@
-from sqlalchemy import Boolean, ForeignKey, Column, Integer, VARCHAR as Varchar, TEXT as Text
+from sqlalchemy import (
+    Boolean,
+    ForeignKey,
+    Column,
+    Integer,
+    VARCHAR as Varchar,
+    TEXT as Text,
+)
 from sqlalchemy.dialects.mysql import TIMESTAMP as Timestamp
 from sqlalchemy.sql.functions import current_timestamp
 from sqlalchemy.orm import relationship
 from app.database import Base
 
 TITLE_LENGTH = 255
+
 
 class Question(Base):
     __tablename__ = "questions"
@@ -19,6 +27,7 @@ class Question(Base):
     def __init__(self, title, description):
         self.title = title
         self.description = description
+
 
 class Answer(Base):
     __tablename__ = "answers"

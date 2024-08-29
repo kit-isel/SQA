@@ -5,6 +5,7 @@ from app import crud
 
 bp = Blueprint("routes", __name__)
 
+
 @bp.route("/ask", methods=["POST"])
 def ask_question():
     title = request.json.get("title")
@@ -14,7 +15,15 @@ def ask_question():
     question = crud.create_question(db_session, title, description)
     return {"question": question.title}
 
-@bp.route("/question-lists", methods=["GET"])
-def question_lists():
-    questions = crud.read_questions()
-    return {"questions": [question.title for question in questions]}
+
+@bp.route("/questions", methods=["GET"])
+def get_questions():
+    questions = crud.read_questions(db_session)
+    return [
+        {
+            "title": question.title,
+            "description": question.description,
+            "answer_counts": question.answer_counts,
+        }
+        for question in questions
+    ]
