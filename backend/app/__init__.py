@@ -1,25 +1,26 @@
 import os
+
+from app import routes
+from app.database import db, init_db
 from flask import Flask
 
-from app.database import init_db
-from app.database import db_session
-from app import routes
 
-def create_app():
+def create_app() -> Flask:
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_pyfile('config.py', silent=True)
+    config_object = os.getenv("FLASK_CONFIG")
+    app.config.from_object(config_object)
 
-    init_db()
+    init_db(app)
 
     # a simple page that says hello
-    @app.route('/')
+    @app.route("/")
     def hello_world():
         return "Hello World"
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
-        db_session.remove()
+        db.session.remove()
 
     app.register_blueprint(routes.bp)
 

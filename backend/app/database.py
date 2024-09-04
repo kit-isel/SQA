@@ -1,26 +1,18 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+class Base(DeclarativeBase):
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-password = os.environ.get("MYSQL_ROOT_PASSWORD")
-dbname = os.environ.get("MYSQL_DATABASE")
 
-SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://root:{password}@mysql:3306/{dbname}"
+db = SQLAlchemy(model_class=Base)
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                            autoflush=False,
-                                            bind=engine))
+def init_db(app: Flask):
+    db.init_app(app)
 
-Base = declarative_base()
-Base.query = db_session.query_property()
-
-def init_db():
-    import app.models
-    Base.metadata.create_all(bind=engine)
+    with app.app_context():
+        db.create_all()

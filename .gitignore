@@ -1,5 +1,6 @@
 *.env
 db/data/
 *.pyc
-backend/app/__pycache__/
+__pycache__
+.pytest_cache
 backend/config.py
