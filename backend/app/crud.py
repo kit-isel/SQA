@@ -1,15 +1,17 @@
-from sqlalchemy import desc, func
-from sqlalchemy.orm import Session
-from app.models import Question, Answer
 import sys
+
+from app.database import db
+from app.models import Answer, Question
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 
 # questionを新規作成
-def create_question(db: Session, title: str, description: str):
+def create_question(title: str, description: str) -> Question:
     question = Question(title, description)
-    db.add(question)
-    db.commit()
-    db.refresh(question)
+    db.session.add(question)
+    db.session.commit()
+    db.session.refresh(question)
     return question
 
 

@@ -1,24 +1,25 @@
-from flask import Blueprint, request
-
-from app.database import db_session
 from app import crud
+from app.database import db
+from flask import Blueprint, jsonify, request
 
 bp = Blueprint("routes", __name__)
 
 
-@bp.route("/ask", methods=["POST"])
-def ask_question():
+@bp.route("/questions/ask", methods=["POST"])
+def post_ask():
+    if not request.json:
+        return jsonify({"error": "title and description are required"}), 400
     title = request.json.get("title")
     description = request.json.get("description")
     if not title or not description:
-        return {"error": "title and description are required"}
-    question = crud.create_question(db_session, title, description)
-    return {"question": question.title}
+        return jsonify({"error": "title and description are required"}), 400
+    question = crud.create_question(title, description)
+    return jsonify(question.to_dict()), 201
 
 
 @bp.route("/questions", methods=["GET"])
 def get_questions():
-    questions = crud.read_questions(db_session)
+    questions = crud.read_questions(db.session)
     return [
         {
             "title": question.title,
