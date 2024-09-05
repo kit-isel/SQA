@@ -41,6 +41,14 @@ def read_questions(session: Session):
     return questions_with_counts
 
 
+# questionをidで取得
+def read_question_by_id(id: int):
+    return Question.query.filter(
+        Question.id == id,
+        Question.deleted == False,
+    ).first()
+
+
 # 全てのquestionを削除
 def delete_questions(db: Session):
     Question.query.delete()
@@ -50,11 +58,11 @@ def delete_questions(db: Session):
 
 
 # answerを作成
-def create_answer(db: Session, question_id: int, description: str):
+def create_answer(question_id: int, description: str):
     answer = Answer(question_id, description)
-    db.add(answer)
-    db.commit()
-    db.refresh(answer)
+    db.session.add(answer)
+    db.session.commit()
+    db.session.refresh(answer)
     return answer
 
 

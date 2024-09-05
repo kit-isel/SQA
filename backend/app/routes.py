@@ -28,3 +28,17 @@ def get_questions():
         }
         for question in questions
     ]
+
+
+@bp.route("/questions/<int:question_id>/answer", methods=["POST"])
+def post_answer(question_id: int):
+    # データのパース
+    description = request.json.get("description")
+    if not description:
+        return jsonify({"error": "description is required"}), 400
+    # question_idに対応するquestionが存在するか確認
+    question = crud.read_question_by_id(question_id)
+    if not question:
+        return jsonify({"error": "question not found"}), 404
+    answer = crud.create_answer(question_id, description)
+    return jsonify(answer.to_dict()), 201
