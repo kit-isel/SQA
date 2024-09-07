@@ -1,12 +1,11 @@
 import pytest
 from app.database import db
-from app.models import Answer
+from app.models import Answer, Question
 from flask.testing import FlaskClient
 
 
 @pytest.fixture
 def insert_question():
-    from app.models import Question
 
     question1 = Question("title1", "description1")
     question2 = Question("title2", "description2")
