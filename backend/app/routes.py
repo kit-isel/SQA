@@ -32,10 +32,16 @@ def get_questions():
 
 @bp.route("/questions/<int:question_id>", methods=["GET"])
 def get_question_with_answers_by_id(question_id: int):
-    question, answers = crud.read_question_with_answers_by_id(question_id)
-    if question is None:
+    question_with_answers = crud.read_question_with_answers_by_id(question_id)
+    if question_with_answers is None:
         return jsonify({"error": "question not found"}), 404
-    return question.to_dict() | {"answers": [answer.to_dict() for answer in answers]}
+    question, answers = question_with_answers
+    return (
+        jsonify(
+            question.to_dict() | {"answers": [answer.to_dict() for answer in answers]}
+        ),
+        200,
+    )
 
 
 @bp.route("/questions/<int:question_id>/answer", methods=["POST"])

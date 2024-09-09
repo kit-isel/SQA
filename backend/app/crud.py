@@ -50,14 +50,14 @@ def read_question_by_id(id: int):
 
 
 # answerと結合したquestionをidで取得
-def read_question_with_answers_by_id(id: int) -> tuple[Question, list[Answer]]:
+def read_question_with_answers_by_id(id: int) -> tuple[Question, list[Answer]] | None:
     # questionを取得
     question = Question.query.filter(
         Question.id == id,
         Question.deleted == False,
     ).first()
     if not question:
-        return None, []
+        return None
     # answerのlistを取得
     answers = Answer.query.filter(
         Answer.question_id == id,
