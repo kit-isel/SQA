@@ -33,24 +33,11 @@ def create_question(title: str, description: str) -> Question:
 
 
 # questionを全て取得
-def read_questions_with_answer_counts(sort_type: SortType) -> dict[str, any]:
-    # subqueryの定義
-    answer_counts = (
-        Answer.query.with_entities(
-            Answer.question_id, func.count(Answer.id).label("answer_counts")
+def read_questions(sort_type: SortType) -> list[Question]:
+    questions = (
+        Question.query.filter(
+            Question.deleted == False,
         )
-        .group_by(Answer.question_id)
-        .subquery()
-    )
-
-    # questionとanswer_countsを結合
-    questions_with_answer_counts = (
-        Question.query.with_entities(
-            Question,
-            func.coalesce(answer_counts.c.answer_counts, 0).label("answer_counts"),
-        )
-        .outerjoin(answer_counts, Question.id == answer_counts.c.question_id)
-        .filter(Question.deleted == False)
         .order_by(
             Question.created_at.desc()
             if sort_type == SortType.NEWEST
@@ -58,36 +45,15 @@ def read_questions_with_answer_counts(sort_type: SortType) -> dict[str, any]:
         )
         .all()
     )
-    db.session.commit()
-    return [
-        question.to_dict() | {"answer_counts": answer_counts}
-        for question, answer_counts in questions_with_answer_counts
-    ]
+    return questions
 
 
 # questionをidで取得
-def read_question_by_id(id: int):
+def read_question_by_id(id: int) -> Question:
     return Question.query.filter(
         Question.id == id,
         Question.deleted == False,
     ).first()
-
-
-# answerと結合したquestionをidで取得
-def read_question_with_answers_by_id(id: int) -> tuple[Question, list[Answer]] | None:
-    # questionを取得
-    question = Question.query.filter(
-        Question.id == id,
-        Question.deleted == False,
-    ).first()
-    if not question:
-        return None
-    # answerのlistを取得
-    answers = Answer.query.filter(
-        Answer.question_id == id,
-        Answer.deleted == False,
-    ).all()
-    return question, answers
 
 
 # 全てのquestionを削除
@@ -105,9 +71,3 @@ def create_answer(question_id: int, description: str):
     db.session.commit()
     db.session.refresh(answer)
     return answer
-
-
-# 全てのanswerを取得（なければ0）
-def read_answers():
-    answers = Answer.query.all()
-    return answers

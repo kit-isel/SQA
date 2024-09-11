@@ -18,12 +18,17 @@ class Question(db.Model):
     status = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
     created_at = Column(Timestamp, default=current_timestamp())
+    answers = db.relationship("Answer", backref="question")
 
     def __init__(self, title, description, created_at=None):
         self.title = title
         self.description = description
         if created_at:
             self.created_at = created_at
+
+    @hybrid_property
+    def answer_counts(self):
+        return len(self.answers)
 
     def to_limited_dict(self):
         return {
@@ -32,6 +37,8 @@ class Question(db.Model):
             "description": self.description,
             "status": self.status,
             "createdAt": self.created_at,
+            "answers": [answer.to_limited_dict() for answer in self.answers],
+            "answerCounts": self.answer_counts,
         }
 
 

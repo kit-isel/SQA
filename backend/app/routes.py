@@ -39,22 +39,17 @@ def get_questions():
     else:
         sort_type = SortType.default()
 
-    data = crud.read_questions_with_answer_counts(sort_type)
-    return jsonify(data), 200
+    questions = crud.read_questions(sort_type)
+    return jsonify([question.to_limited_dict() for question in questions]), 200
 
 
 @bp.route("/questions/<int:question_id>", methods=["GET"])
-def get_question_with_answers_by_id(question_id: int):
-    question_with_answers = crud.read_question_with_answers_by_id(question_id)
-    if question_with_answers is None:
+def get_question_by_id(question_id: int):
+    question = crud.read_question_by_id(question_id)
+    if question is None:
         return jsonify({"error": "question not found"}), 404
-    question, answers = question_with_answers
-    return (
-        jsonify(
-            question.to_dict() | {"answers": [answer.to_dict() for answer in answers]}
-        ),
-        200,
-    )
+
+    return jsonify(question.to_limited_dict()), 200
 
 
 @bp.route("/questions/<int:question_id>/answers", methods=["POST"])
