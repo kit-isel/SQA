@@ -27,51 +27,49 @@ def insert_questions_and_answers():
     db.session.commit()
 
 
-# @pytest.mark.usefixtures("init_db", "insert_questions_and_answers")
+@pytest.mark.usefixtures("init_db", "insert_questions_and_answers")
 class TestGetQuestions:
     """
     有効なデータを送信した場合
     """
 
-    def test_with_valid_data(self, client, init_db, insert_questions_and_answers):
+    def test_with_valid_data(self, client):
         response = client.get("/questions")
         # レスポンスの確認
         assert response.status_code == 200
         assert len(response.json) == 4
 
-    def test_with_sort_newest(self, client, init_db, insert_questions_and_answers):
+    def test_with_sort_newest(self, client):
         response = client.get("/questions?sort=newest")
         # レスポンスの確認
         assert response.status_code == 200
-        print(response.json)
+
         assert len(response.json) == 4
         for i in range(3):
 
             assert datetime.strptime(
-                response.json[i]["created_at"], "%a, %d %b %Y %H:%M:%S GMT"
+                response.json[i]["createdAt"], "%a, %d %b %Y %H:%M:%S GMT"
             ) > datetime.strptime(
-                response.json[i + 1]["created_at"], "%a, %d %b %Y %H:%M:%S GMT"
+                response.json[i + 1]["createdAt"], "%a, %d %b %Y %H:%M:%S GMT"
             )
 
-    def test_with_sort_oldest(self, client, init_db, insert_questions_and_answers):
+    def test_with_sort_oldest(self, client):
         response = client.get("/questions?sort=oldest")
         # レスポンスの確認
         assert response.status_code == 200
         assert len(response.json) == 4
         for i in range(3):
             assert datetime.strptime(
-                response.json[i]["created_at"], "%a, %d %b %Y %H:%M:%S GMT"
+                response.json[i]["createdAt"], "%a, %d %b %Y %H:%M:%S GMT"
             ) < datetime.strptime(
-                response.json[i + 1]["created_at"], "%a, %d %b %Y %H:%M:%S GMT"
+                response.json[i + 1]["createdAt"], "%a, %d %b %Y %H:%M:%S GMT"
             )
 
     """
     無効なデータを送信した場合
     """
 
-    def test_with_invalid_sort_type(
-        self, client, init_db, insert_questions_and_answers
-    ):
+    def test_with_invalid_sort_type(self, client):
         response = client.get("/questions?sort=invalid")
         # レスポンスの確認
         assert response.status_code == 400

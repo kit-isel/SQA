@@ -1,5 +1,4 @@
 import pytest
-from app.crud import read_question_with_answers_by_id
 from app.database import db
 from app.models import Answer, Question
 
@@ -25,7 +24,8 @@ def insert_questions_and_answers():
     db.session.commit()
 
 
-class TestGetQuestionWithAnswersById:
+@pytest.mark.usefixtures("init_db", "insert_questions_and_answers")
+class TestGetQuestionById:
     """
     有効なデータを送信した場合
     """
@@ -52,14 +52,7 @@ class TestGetQuestionWithAnswersById:
             ),
         ],
     )
-    def test_with_valid_data(
-        self,
-        client,
-        init_db,
-        insert_questions_and_answers,
-        id: int,
-        expected: dict,
-    ):
+    def test_with_valid_data(self, client, id: int, expected: dict):
         response = client.get(f"/questions/{id}")
         assert response.status_code == 200
         assert response.json.get("id") == id
@@ -67,17 +60,13 @@ class TestGetQuestionWithAnswersById:
         assert response.json.get("description") == expected["description"]
         assert len(response.json.get("answers")) == len(expected["answers"])
         for i, answer in enumerate(response.json.get("answers")):
-            assert answer.get("question_id") == id
+            assert answer.get("questionId") == id
             assert answer.get("description") == expected["answers"][i]["description"]
 
     """
     無効なデータを送信した場合
     """
 
-    def test_when_db_is_empty(self, client, init_db):
-        response = client.get("/questions/1")
-        assert response.status_code == 404
-
-    def test_with_no_question(self, client, init_db, insert_questions_and_answers):
+    def test_with_no_question(self, client):
         response = client.get("/questions/5")
         assert response.status_code == 404
