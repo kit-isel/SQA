@@ -1,4 +1,5 @@
 from app import crud
+from app.crud import SortType
 from app.database import db
 from flask import Blueprint, jsonify, request
 
@@ -19,15 +20,19 @@ def post_ask():
 
 @bp.route("/questions", methods=["GET"])
 def get_questions():
-    questions = crud.read_questions(db.session)
-    return [
-        {
-            "title": question.title,
-            "description": question.description,
-            "answer_counts": question.answer_counts,
-        }
-        for question in questions
-    ]
+
+    # sortパラメータの処理
+    sort_param = request.args.get("sort")
+    if sort_param:
+        try:
+            sort_type = SortType.from_str(sort_param)
+        except ValueError:
+            return jsonify({"error": "invalid sort type"}), 400
+    else:
+        sort_type = SortType.default()
+
+    data = crud.read_questions_with_answer_counts(sort_type)
+    return jsonify(data), 200
 
 
 @bp.route("/questions/<int:question_id>", methods=["GET"])
