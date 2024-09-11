@@ -1,4 +1,6 @@
+from app.constants import TITLE_MAX_LENGTH
 from app.database import db
+from flask import current_app
 from sqlalchemy import TEXT as Text
 from sqlalchemy import VARCHAR as Varchar
 from sqlalchemy import Boolean, Column, ForeignKey, Integer
@@ -6,14 +8,12 @@ from sqlalchemy.dialects.mysql import TIMESTAMP as Timestamp
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import current_timestamp
 
-TITLE_LENGTH = 255
-
 
 class Question(db.Model):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(Varchar(TITLE_LENGTH))
+    title = Column(Varchar(TITLE_MAX_LENGTH))
     description = Column(Text)
     status = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
@@ -24,6 +24,15 @@ class Question(db.Model):
         self.description = description
         if created_at:
             self.created_at = created_at
+
+    def to_limited_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "status": self.status,
+            "createdAt": self.created_at,
+        }
 
 
 class Answer(db.Model):
@@ -39,3 +48,12 @@ class Answer(db.Model):
     def __init__(self, question_id, description):
         self.question_id = question_id
         self.description = description
+
+    def to_limited_dict(self):
+        return {
+            "id": self.id,
+            "questionId": self.question_id,
+            "description": self.description,
+            "isBest": self.is_best,
+            "createdAt": self.created_at,
+        }

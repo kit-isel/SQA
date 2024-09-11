@@ -3,7 +3,6 @@ import os
 import pytest
 from app import create_app
 from app.database import db
-from app.models import Answer, Question
 from flask import Flask
 from flask.testing import FlaskClient
 
@@ -28,6 +27,5 @@ def init_db(app: Flask):
         db.create_all()
         db.session.begin_nested()
         yield
-
         db.session.close()
         db.drop_all()
