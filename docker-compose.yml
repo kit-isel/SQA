@@ -16,8 +16,8 @@ services:
     build: ./backend
     image: flask-sqa
     container_name: flask-sqa
-    ports:
-      - 5051:5000
+    # ports:
+    #   - 5051:5000
     volumes:
       - ./backend:/app
     env_file:
@@ -31,8 +31,8 @@ services:
     image: mysql:9.0
     platform: linux/arm64
     container_name: mysql-sqa
-    ports:
-      - 3306:3306
+    # ports:
+    #   - 3306:3306
     restart: always
     env_file:
       - ./db/.env
