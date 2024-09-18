@@ -5,6 +5,7 @@ import {
   Divider,
   Drawer,
   Fab,
+  FormGroup,
   IconButton,
   List,
   ListItem,
@@ -17,6 +18,16 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import CommentIcon from "@mui/icons-material/Comment";
 import EditIcon from "@mui/icons-material/Edit";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import useSWR from "swr";
 import { useState } from "react";
 
@@ -43,15 +54,19 @@ function App() {
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [sort, setSort] = useState("newest");
 
-  const questionsFetcher = async () => {
-    return fetch("http://127.0.0.1:8080/api/v1/questions").then((res) =>
+  const questionsFetcher = (url: string) => {
+    return fetch(url).then((res) =>
       res.json()
     );
   };
   const { data, error, isLoading } = useSWR<Question[]>(
-    "http://localhost:8080/api/v1/questions",
-    questionsFetcher
+    () => {
+      const query = new URLSearchParams({sort: sort});
+      return `http://localhost:8080/api/v1/questions?${query}`;
+    },
+    (url: string) => questionsFetcher(url)
   );
   console.log(data);
   return (
@@ -91,6 +106,41 @@ function App() {
             },
           }}
         >
+          <Accordion disableGutters sx={{
+            p: 1,
+          }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1-content"
+              id="panel1-header"
+            >
+              <Typography>ソート・フィルター</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                <FormControl>
+                  <FormLabel id="created-at-radio-group-label">ソート</FormLabel>
+                  <RadioGroup
+                    aria-labelledby="created-at-radio-group-label"
+                    defaultValue="newest"
+                    name="created-at-radio-button-group"
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value)}
+                  >
+                    <FormControlLabel value="newest" control={<Radio />} label="Newest" />
+                    <FormControlLabel value="oldest" control={<Radio />} label="Oldest" />
+                  </RadioGroup>
+                </FormControl>
+                <FormControl>
+                  <FormLabel component="legend">フィルター</FormLabel>
+                  <FormGroup>
+                    <FormControlLabel control={<Checkbox defaultChecked />} label="未回答" />
+                  </FormGroup>
+                </FormControl>
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
           {isLoading ? (
             <Typography>ロード中...</Typography>
           ) : (
