@@ -11,6 +11,12 @@ def create_app() -> Flask:
     config_object = os.getenv("FLASK_CONFIG")
     app.config.from_object(config_object)
 
+    # 開発環境時のみCORSを有効にする
+    if config_object == "app.config.DevelopmentConfig":
+        from flask_cors import CORS
+
+        CORS(app)
+
     init_db(app)
 
     # a simple page that says hello
