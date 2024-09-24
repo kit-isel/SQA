@@ -58,7 +58,7 @@ class Answer(db.Model):
     description = Column(Text)
     is_best = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
-    created_at = Column(Timestamp)
+    created_at = Column(Timestamp, default=current_timestamp())
 
     def __init__(self, question_id, description):
         self.question_id = question_id
