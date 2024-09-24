@@ -1,7 +1,7 @@
 import os
 
 from app import routes
-from app.cli import answers, qustions
+from app.cli import answers, init, qustions
 from app.database import db, init_db
 from flask import Flask
 
@@ -32,5 +32,7 @@ def create_app() -> Flask:
     app.register_blueprint(routes.bp)
     app.register_blueprint(qustions.bp)
     app.register_blueprint(answers.bp)
+    if config_object == "app.config.DevelopmentConfig":
+        app.register_blueprint(init.bp)
 
     return app
