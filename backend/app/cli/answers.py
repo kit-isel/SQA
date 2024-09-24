@@ -1,4 +1,4 @@
-from pprint import pp
+from pprint import pformat
 
 import click
 from app import crud
@@ -14,7 +14,7 @@ bp = Blueprint("answers", __name__)
 )
 def read_answers(sort: str):
     answers = crud.read_answers(SortType.from_str(sort), include_deleted=True)
-    pp([answer.to_dict() for answer in answers])
+    click.echo(pformat([answer.to_dict() for answer in answers]))
 
 
 @bp.cli.command("create")
@@ -23,9 +23,9 @@ def read_answers(sort: str):
 def create_answer(question_id: int, description: str):
     if crud.read_question_by_id(question_id):
         answer = crud.create_answer(question_id, description)
-        pp(answer.to_dict())
+        click.echo(pformat(answer.to_dict()))
     else:
-        print("error", "question not found")
+        click.echo("error", "question not found")
 
 
 @bp.cli.command("delete")
@@ -39,6 +39,6 @@ def delete_answer(id: int, force: bool):
         if answer:
             answer.deleted = True
             answer = crud.update_answer(answer)
-            pp(answer.to_dict())
+            click.echo(pformat(answer.to_dict()))
         else:
-            print("error", "answer not found")
+            click.echo("error", "answer not found")
