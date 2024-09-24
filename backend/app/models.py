@@ -33,6 +33,9 @@ class Question(db.Model):
     def to_dict(self):
         return {
             column.name: getattr(self, column.name) for column in self.__table__.columns
+        } | {
+            "answers": [answer.to_dict() for answer in self.answers],
+            "answerCounts": self.answer_counts,
         }
 
     def to_limited_dict(self):

@@ -33,27 +33,34 @@ def create_question(title: str, description: str) -> Question:
 
 
 # questionを全て取得
-def read_questions(sort_type: SortType) -> list[Question]:
-    questions = (
-        Question.query.filter(
-            Question.deleted == False,
-        )
-        .order_by(
-            Question.created_at.desc()
-            if sort_type == SortType.NEWEST
-            else Question.created_at.asc()
-        )
-        .all()
-    )
-    return questions
+def read_questions(
+    sort_type: SortType, include_deleted: bool = False
+) -> list[Question]:
+    query = Question.query
+    if not include_deleted:
+        query = query.filter(Question.deleted == False)
+    match sort_type:
+        case SortType.NEWEST:
+            query = query.order_by(Question.created_at.desc())
+        case SortType.OLDEST:
+            query = query.order_by(Question.created_at.asc())
+    return query.all()
 
 
 # questionをidで取得
-def read_question_by_id(id: int) -> Question:
-    return Question.query.filter(
-        Question.id == id,
-        Question.deleted == False,
-    ).first()
+def read_question_by_id(id: int, include_deleted: bool = False) -> Question:
+    query = Question.query.filter(Question.id == id)
+    if not include_deleted:
+        query = query.filter(Question.deleted == False)
+    return query.first()
+
+
+# questionを更新
+def update_question(question: Question) -> Question:
+    db.session.add(question)
+    db.session.commit()
+    db.session.refresh(question)
+    return question
 
 
 # 全てのquestionを削除
@@ -62,6 +69,13 @@ def delete_questions(db: Session):
     db.commit()
     Answer.query.delete()
     db.commit()
+
+
+# questionをidで削除
+def delete_question_by_id(id: int):
+    Question.query.filter(Question.id == id).delete()
+    db.session.commit()
+    return None
 
 
 # answerを作成
