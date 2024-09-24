@@ -1,6 +1,7 @@
 import os
 
 from app import routes
+from app.cli import answers, qustions
 from app.database import db, init_db
 from flask import Flask
 
@@ -29,5 +30,7 @@ def create_app() -> Flask:
         db.session.remove()
 
     app.register_blueprint(routes.bp)
+    app.register_blueprint(qustions.bp)
+    app.register_blueprint(answers.bp)
 
     return app

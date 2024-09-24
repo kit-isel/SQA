@@ -71,3 +71,18 @@ def create_answer(question_id: int, description: str):
     db.session.commit()
     db.session.refresh(answer)
     return answer
+
+
+def read_answers(sort_type: SortType) -> list[Answer]:
+    answers = (
+        Answer.query.filter(
+            Answer.deleted == False,
+        )
+        .order_by(
+            Answer.created_at.desc()
+            if sort_type == SortType.NEWEST
+            else Answer.created_at.asc()
+        )
+        .all()
+    )
+    return answers

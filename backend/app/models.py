@@ -30,6 +30,11 @@ class Question(db.Model):
     def answer_counts(self):
         return len(self.answers)
 
+    def to_dict(self):
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
+
     def to_limited_dict(self):
         return {
             "id": self.id,
@@ -55,6 +60,11 @@ class Answer(db.Model):
     def __init__(self, question_id, description):
         self.question_id = question_id
         self.description = description
+
+    def to_dict(self):
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
 
     def to_limited_dict(self):
         return {
