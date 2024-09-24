@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from random import randint
+
 import click
 from app import crud
 from app.crud import SortType
@@ -26,9 +29,24 @@ def init_random(count: int, force: bool):
         db.drop_all()
         db.create_all()
         for i in range(1, count + 1):
-            crud.create_question(f"title {i}", f"description {i}")
-            crud.create_answer(i, f"description{i}")
+            question = crud.create_question(f"title {i}", f"description {i}")
+            question.created_at = random_datetime(
+                datetime(2023, 1, 1), datetime.now() - timedelta(days=1)
+            )
+            crud.update_question(question)
+
+            for j in range(1, randint(1, 5)):
+                answer = crud.create_answer(question.id, f"description {i}-{j}")
+                answer.created_at = random_datetime(question.created_at, datetime.now())
+                crud.update_answer(answer)
 
         click.echo("Initialized database with dummy data")
     else:
         click.echo("Add --force to initialize database")
+
+
+def random_datetime(
+    start: datetime,
+    end: datetime,
+) -> datetime:
+    return start + (end - start) * randint(0, 1000) / 1000
