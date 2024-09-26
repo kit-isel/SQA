@@ -38,7 +38,7 @@ def delete_answer(id: int, force: bool):
         answer = crud.read_answer_by_id(id)
         if answer:
             answer.deleted = True
-            answer = crud.update_answer(answer)
+            crud.commit()
             click.echo(pformat(answer.to_dict()))
         else:
             click.echo("error", "answer not found")

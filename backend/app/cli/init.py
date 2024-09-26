@@ -33,12 +33,12 @@ def init_random(count: int, force: bool):
             question.created_at = random_datetime(
                 datetime(2023, 1, 1), datetime.now() - timedelta(days=1)
             )
-            crud.update_question(question)
+            crud.commit()
 
             for j in range(1, randint(1, 5)):
                 answer = crud.create_answer(question.id, f"description {i}-{j}")
                 answer.created_at = random_datetime(question.created_at, datetime.now())
-                crud.update_answer(answer)
+                crud.commit()
 
         click.echo("Initialized database with dummy data")
     else:

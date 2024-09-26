@@ -35,7 +35,7 @@ def delete_question(id: int, force: bool):
         question = crud.read_question_by_id(id)
         if question:
             question.deleted = True
-            question = crud.update_question(question)
+            crud.commit()
             click.echo(pformat(question.to_dict()))
         else:
             click.echo("error", "question not found")

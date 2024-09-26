@@ -23,6 +23,10 @@ class SortType(StrEnum):
         raise ValueError(f"invalid sort type: {s}")
 
 
+def commit():
+    db.session.commit()
+
+
 """
 QuestionのCRUD操作を行う関数を定義
 """
@@ -58,14 +62,6 @@ def read_question_by_id(id: int, include_deleted: bool = False) -> Question:
     if not include_deleted:
         query = query.filter(Question.deleted == False)
     return query.first()
-
-
-# questionを更新
-def update_question(question: Question) -> Question:
-    db.session.add(question)
-    db.session.commit()
-    db.session.refresh(question)
-    return question
 
 
 # 全てのquestionを削除
@@ -116,14 +112,6 @@ def read_answer_by_id(id: int, include_deleted: bool = False) -> Answer:
     if not include_deleted:
         query = query.filter(Answer.deleted == False)
     return query.first()
-
-
-# answerを更新
-def update_answer(answer: Answer) -> Answer:
-    db.session.add(answer)
-    db.session.commit()
-    db.session.refresh(answer)
-    return answer
 
 
 # 全てのanswerを削除
