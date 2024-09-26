@@ -30,6 +30,14 @@ class Question(db.Model):
     def answer_counts(self):
         return len(self.answers)
 
+    def to_dict(self):
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        } | {
+            "answers": [answer.to_dict() for answer in self.answers],
+            "answerCounts": self.answer_counts,
+        }
+
     def to_limited_dict(self):
         return {
             "id": self.id,
@@ -50,11 +58,16 @@ class Answer(db.Model):
     description = Column(Text)
     is_best = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
-    created_at = Column(Timestamp)
+    created_at = Column(Timestamp, default=current_timestamp())
 
     def __init__(self, question_id, description):
         self.question_id = question_id
         self.description = description
+
+    def to_dict(self):
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
 
     def to_limited_dict(self):
         return {
