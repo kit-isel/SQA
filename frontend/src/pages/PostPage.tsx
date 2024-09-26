@@ -15,7 +15,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import SendIcon from "@mui/icons-material/Send";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const HEADER_HEIGHT = "64px";
 
@@ -111,9 +111,18 @@ function PostPage() {
     <Box sx={{ display: "flex" }}>
       <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             学生質問箱
-          </Typography>
+          </Typography> */}
+          <Button component={Link} to="/">
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1, color: "white" }}
+            >
+              学生質問箱
+            </Typography>
+          </Button>
         </Toolbar>
       </AppBar>
       <Box sx={{ mt: HEADER_HEIGHT, width: "100%", px: "10%", py: "5%" }}>
