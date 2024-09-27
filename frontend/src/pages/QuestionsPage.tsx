@@ -33,23 +33,8 @@ import { useState } from "react";
 import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 
 import PostPage from "./PostPage";
-
-interface Answer {
-  id: number;
-  questionId: number;
-  description: string;
-  isBest: boolean;
-  createdAt: string;
-}
-interface Question {
-  id: number;
-  title: string;
-  description: string;
-  status: boolean;
-  createdAt: string;
-  answers: Answer[];
-  answerCounts: number;
-}
+import { Question } from "./types/Question";
+import { Answer } from "./types/Answer";
 
 const HEADER_HEIGHT = "64px";
 
