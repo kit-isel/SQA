@@ -10,31 +10,20 @@ import {
   IconButton,
   List,
   ListItem,
-  Pagination,
-  PaginationItem,
   Stack,
   Toolbar,
   Typography,
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
-import useSWR from "swr";
+import { Link, useSearchParams } from "react-router-dom";
 
 import QuestionList from "../components/QuestionList";
-import Question from "../types/Question";
 import FilterBox from "../components/FilterBox";
 import QuestionsPagination from "../components/QuestionsPagination";
+import useQuestions from "../hooks/useQuestions";
 
 const HEADER_HEIGHT = "64px";
-
-interface QuestionsResponse {
-  questions: Question[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-  };
-}
 
 function QuestionsPage() {
   const theme = useTheme();
@@ -45,16 +34,9 @@ function QuestionsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
 
-  const questionsFetcher = ({ url, sort, page }: any) => {
-    return fetch(`${url}?sort=${sort}&page=${page}`).then((res) => res.json());
-  };
-  const { data, isLoading } = useSWR<QuestionsResponse>(
-    {
-      url: "http://localhost:8080/api/v1/questions",
-      sort: searchParams.get("sort") || "newest",
-      page: searchParams.get("page") || "1",
-    },
-    questionsFetcher
+  const { questions, pagination, isLoading } = useQuestions(
+    searchParams.get("sort"),
+    searchParams.get("page")
   );
 
   const handlePageChange = (page: number) => {
@@ -114,19 +96,19 @@ function QuestionsPage() {
         <Box overflow="scroll">
           <Stack direction="column" alignItems="center" spacing="8px">
             <QuestionsPagination
-              page={data?.pagination.currentPage}
-              totalPages={data?.pagination.totalPages}
+              page={pagination?.currentPage}
+              totalPages={pagination?.totalPages}
               onChange={handlePageChange}
             />
             <QuestionList
-              questions={data?.questions || []}
+              questions={questions || []}
               selectedIndex={selectedIndex}
               onSelectedIndexChange={setSelectedIndex}
               isLoading={isLoading}
             />
             <QuestionsPagination
-              page={data?.pagination.currentPage}
-              totalPages={data?.pagination.totalPages}
+              page={pagination?.currentPage}
+              totalPages={pagination?.totalPages}
               onChange={handlePageChange}
             />
           </Stack>
@@ -142,14 +124,14 @@ function QuestionsPage() {
           component="h1"
           sx={{ borderBottom: "1px solid", borderColor: "divider", mb: 2 }}
         >
-          {data?.questions[selectedIndex].title}
+          {questions?.[selectedIndex].title}
         </Typography>
         <Typography variant="body1">
-          {data?.questions[selectedIndex].description}
+          {questions?.[selectedIndex].description}
         </Typography>
         <Divider orientation="horizontal" sx={{ width: "100%", my: 4 }} />
         <List>
-          {data?.questions[selectedIndex].answers.map((answer) => (
+          {questions?.[selectedIndex].answers.map((answer) => (
             <ListItem
               key={answer.id}
               sx={{
