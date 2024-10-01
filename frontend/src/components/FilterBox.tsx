@@ -20,12 +20,7 @@ interface FilterBoxProps {
 
 export default function FilterBox({ sort, onSortChange }: FilterBoxProps) {
   return (
-    <Accordion
-      disableGutters
-      sx={{
-        p: 1,
-      }}
-    >
+    <Accordion disableGutters sx={{ width: "100%" }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"

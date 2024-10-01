@@ -2,10 +2,8 @@ import {
   List,
   ListItem,
   Skeleton,
-  Stack,
   ListItemButton,
   ListItemText,
-  ListItemIcon,
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
 import Question from "../types/Question";
@@ -24,7 +22,18 @@ function QuestionList({
   isLoading,
 }: QuestionListProps) {
   return (
-    <List>
+    <List
+      disablePadding
+      sx={{
+        width: "100%",
+        height: "100%",
+        borderTop: 1,
+        borderColor: "divider",
+        "&.MuiList-root": {
+          margin: 0,
+        },
+      }}
+    >
       {isLoading
         ? Array.from({ length: 10 }).map((_, index) => (
             <ListItem key={index}>
@@ -62,7 +71,7 @@ function QuestionList({
                     whiteSpace: "nowrap",
                     display: "-webkit-box",
                   }}
-                  sx={{ width: "10%" }}
+                  sx={{ width: "80%" }}
                 />
                 <CommentIcon color="primary" />
                 <ListItemText
