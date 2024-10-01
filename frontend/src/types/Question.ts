@@ -1,6 +1,6 @@
-import { Answer } from './Answer';
+import Answer from './Answer';
 
-interface Question {
+export default interface Question {
     id: number;
     title: string;
     description: string;
@@ -9,5 +9,3 @@ interface Question {
     answers: Answer[];
     answerCounts: number;
 }
-
-export type { Question };
