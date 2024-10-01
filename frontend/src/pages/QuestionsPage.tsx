@@ -1,3 +1,7 @@
+import CommentIcon from "@mui/icons-material/Comment";
+import EditIcon from "@mui/icons-material/Edit";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
@@ -15,28 +19,32 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import CommentIcon from "@mui/icons-material/Comment";
-import EditIcon from "@mui/icons-material/Edit";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Checkbox from "@mui/material/Checkbox";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import useSWR from "swr";
 import { useState } from "react";
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import useSWR from "swr";
 
-import PostPage from "./PostPage";
-import { Question } from "./types/Question";
-import { Answer } from "./types/Answer";
+import QuestionList from "../components/QuestionList";
+import Question from "../types/Question";
+import FilterBox from "../components/FilterBox";
 
 const HEADER_HEIGHT = "64px";
+
+interface QuestionsResponse {
+  questions: Question[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+  };
+}
 
 function QuestionsPage() {
   const theme = useTheme();
@@ -44,15 +52,12 @@ function QuestionsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [sort, setSort] = useState("newest");
 
-  const questionsFetcher = (url: string) => {
-    return fetch(url).then((res) => res.json());
+  const questionsFetcher = ([url, sort]: string) => {
+    return fetch(`${url}?sort=${sort}`).then((res) => res.json());
   };
-  const { data, error, isLoading } = useSWR<Question[]>(
-    () => {
-      const query = new URLSearchParams({ sort: sort });
-      return `http://localhost:8080/api/v1/questions?${query}`;
-    },
-    (url: string) => questionsFetcher(url)
+  const { data, isLoading } = useSWR<QuestionsResponse>(
+    ["http://localhost:8080/api/v1/questions", sort],
+    questionsFetcher
   );
   console.log(data);
   return (
@@ -98,117 +103,13 @@ function QuestionsPage() {
             },
           }}
         >
-          <Accordion
-            disableGutters
-            sx={{
-              p: 1,
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1-content"
-              id="panel1-header"
-            >
-              <Typography>ソート・フィルター</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                <FormControl>
-                  <FormLabel id="created-at-radio-group-label">
-                    ソート
-                  </FormLabel>
-                  <RadioGroup
-                    aria-labelledby="created-at-radio-group-label"
-                    defaultValue="newest"
-                    name="created-at-radio-button-group"
-                    value={sort}
-                    onChange={(e) => setSort(e.target.value)}
-                  >
-                    <FormControlLabel
-                      value="newest"
-                      control={<Radio />}
-                      label="Newest"
-                    />
-                    <FormControlLabel
-                      value="oldest"
-                      control={<Radio />}
-                      label="Oldest"
-                    />
-                  </RadioGroup>
-                </FormControl>
-                <FormControl>
-                  <FormLabel component="legend">フィルター</FormLabel>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={<Checkbox defaultChecked />}
-                      label="未回答"
-                    />
-                  </FormGroup>
-                </FormControl>
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-          {isLoading ? (
-            <Typography>ロード中...</Typography>
-          ) : (
-            <List sx={{ flexGrow: 1, p: 0 }}>
-              {data?.map((question, index) => (
-                <ListItem
-                  key={question.id}
-                  sx={{
-                    pl: index === selectedIndex ? 2 : 1,
-                    borderBottom: 1,
-                    borderColor: "divider",
-                  }}
-                >
-                  <ListItemButton
-                    selected={selectedIndex === index}
-                    onClick={() => setSelectedIndex(index)}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Stack direction={"column"}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "-webkit-box",
-                          WebkitLineClamp: "1",
-                          WebkitBoxOrient: "vertical",
-                        }}
-                      >
-                        {question.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "-webkit-box",
-                          WebkitLineClamp: "2",
-                          WebkitBoxOrient: "vertical",
-                        }}
-                      >
-                        {question.description}
-                        {/* {question.description.length > 30
-                          ? question.description.slice(0, 30) + "..."
-                          : question.description} */}
-                      </Typography>
-                    </Stack>
-                    <Stack direction={"row"}>
-                      <CommentIcon color="primary" />
-                      <Typography>
-                        {question.answerCounts.toString().padStart(2, "0")}
-                      </Typography>
-                    </Stack>
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          )}
+          <FilterBox sort={sort} onSortChange={setSort} />
+          <QuestionList
+            questions={data?.questions || []}
+            selectedIndex={selectedIndex}
+            onSelectedIndexChange={setSelectedIndex}
+            isLoading={isLoading}
+          />
         </Drawer>
       </Box>
       <Box
@@ -221,14 +122,14 @@ function QuestionsPage() {
           component="h1"
           sx={{ borderBottom: "1px solid", borderColor: "divider", mb: 2 }}
         >
-          {data?.[selectedIndex].title}
+          {data?.questions[selectedIndex].title}
         </Typography>
         <Typography variant="body1">
-          {data?.[selectedIndex].description}
+          {data?.questions[selectedIndex].description}
         </Typography>
         <Divider orientation="horizontal" sx={{ width: "100%", my: 4 }} />
         <List>
-          {data?.[selectedIndex].answers.map((answer) => (
+          {data?.questions[selectedIndex].answers.map((answer) => (
             <ListItem
               key={answer.id}
               sx={{
@@ -246,9 +147,6 @@ function QuestionsPage() {
           <CommentIcon />
         </Fab>
       </Box>
-      <Routes>
-        <Route path="/questions/post" element={<PostPage />} />
-      </Routes>
     </Box>
   );
 }
