@@ -30,17 +30,29 @@ def post_question():
 def get_questions():
 
     # sortパラメータの処理
-    sort_param = request.args.get("sort")
-    if sort_param:
-        try:
-            sort_type = SortType.from_str(sort_param)
-        except ValueError:
-            return jsonify({"error": "invalid sort type"}), 400
-    else:
-        sort_type = SortType.default()
+    sort_param = request.args.get(
+        "sort", default=SortType.NEWEST, type=SortType.from_str
+    )
 
-    questions = crud.read_questions(sort_type)
-    return jsonify([question.to_limited_dict() for question in questions]), 200
+    # pageパラメータの処理
+    page_param = request.args.get("page", default=1, type=int)
+    total_pages = crud.read_questions_total_pages()
+    if page_param > total_pages:
+        return jsonify({"error": "page not found"}), 404
+
+    questions = crud.read_questions(sort_param, page_param)
+    return (
+        jsonify(
+            {
+                "questions": [question.to_limited_dict() for question in questions],
+                "pagination": {
+                    "currentPage": page_param,
+                    "totalPages": total_pages,
+                },
+            }
+        ),
+        200,
+    )
 
 
 @bp.route("/questions/<int:question_id>", methods=["GET"])

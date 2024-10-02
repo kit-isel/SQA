@@ -2,6 +2,7 @@ import sys
 from enum import StrEnum, auto
 from typing import Self
 
+from app.constants import PER_PAGE
 from app.database import db
 from app.models import Answer, Question
 from sqlalchemy import func
@@ -17,10 +18,11 @@ class SortType(StrEnum):
         return cls.NEWEST
 
     @classmethod
-    def from_str(cls, s: str) -> Self:
-        if s.upper() in cls.__members__:
-            return cls[s.upper()]
-        raise ValueError(f"invalid sort type: {s}")
+    def from_str(cls, value: str):
+        try:
+            return cls[value.upper()]
+        except KeyError:
+            return cls.default()
 
 
 def commit():
@@ -43,7 +45,9 @@ def create_question(title: str, description: str) -> Question:
 
 # questionを全て取得
 def read_questions(
-    sort_type: SortType, include_deleted: bool = False
+    sort_type: SortType,
+    page: int,
+    include_deleted: bool = False,
 ) -> list[Question]:
     query = Question.query
     if not include_deleted:
@@ -53,7 +57,20 @@ def read_questions(
             query = query.order_by(Question.created_at.desc())
         case SortType.OLDEST:
             query = query.order_by(Question.created_at.asc())
-    return query.all()
+
+    pagination = query.paginate(page=page, per_page=PER_PAGE, error_out=False)
+
+    return pagination.items
+
+
+# questionsの総ページ数を取得
+def read_questions_total_pages(include_deleted: bool = False) -> int:
+    query = db.session.query(func.count(Question.id))
+    if not include_deleted:
+        query = query.filter(Question.deleted == False)
+    total_questions = query.scalar()
+    total_pages = (total_questions - 1) // PER_PAGE + 1
+    return total_pages if total_pages > 0 else 1
 
 
 # questionをidで取得

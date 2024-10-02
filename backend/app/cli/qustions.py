@@ -12,8 +12,9 @@ bp = Blueprint("questions", __name__)
 @click.option(
     "-s", "--sort", type=str, default=SortType.default().name, help="sort type"
 )
-def read_questions(sort: str):
-    questions = crud.read_questions(SortType.from_str(sort), include_deleted=True)
+@click.option("-p", "--page", type=int, default=1, help="page number")
+def read_questions(sort: str, page: int):
+    questions = crud.read_questions(SortType.from_str(sort), page, include_deleted=True)
     click.echo(pformat([question.to_dict() for question in questions]))
 
 
