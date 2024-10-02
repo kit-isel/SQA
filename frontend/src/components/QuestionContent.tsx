@@ -8,7 +8,7 @@ interface QuestionContentProps {
 
 export default function QuestionContent({ question }: QuestionContentProps) {
   return (
-    <Stack direction="column" component="main" sx={{ width: "100%" }}>
+    <Stack direction="column" sx={{ maxWidth: "100%", minWidth: 0 }}>
       <Typography
         variant="h4"
         component="h1"
@@ -18,6 +18,8 @@ export default function QuestionContent({ question }: QuestionContentProps) {
           mb: 2,
           width: "100%",
           overflowWrap: "break-word",
+          wordBreak: "break-all",
+          minWidth: 0,
         }}
       >
         {question.title}
@@ -27,6 +29,8 @@ export default function QuestionContent({ question }: QuestionContentProps) {
         sx={{
           width: "100%",
           overflowWrap: "break-word",
+          wordBreak: "break-all",
+          minWidth: 0,
         }}
       >
         {question.description}

@@ -11,6 +11,7 @@ import {
   IconButton,
   List,
   ListItem,
+  Slide,
   Stack,
   Toolbar,
   Typography,
@@ -86,42 +87,41 @@ function QuestionsPage() {
           </Button>
         </Toolbar>
       </AppBar>
-      <Collapse orientation="horizontal" in={drawerOpen}>
-        <Stack
-          direction="column"
-          sx={{
-            width: "360px",
-            height: `calc(100vh - ${HEADER_HEIGHT})`,
-            mt: HEADER_HEIGHT,
-            overflow: "hidden",
-            flexShrink: 0,
-            borderRight: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <FilterBox sort={sort} onSortChange={handleSortChange} />
-          <Box overflow="scroll">
-            <Stack direction="column" alignItems="center" spacing="8px">
-              <QuestionsPagination
-                page={pagination?.currentPage}
-                totalPages={pagination?.totalPages}
-                onChange={handlePageChange}
-              />
-              <QuestionList
-                questions={questions || []}
-                selectedIndex={selectedIndex}
-                onSelectedIndexChange={setSelectedIndex}
-                isLoading={isLoading}
-              />
-              <QuestionsPagination
-                page={pagination?.currentPage}
-                totalPages={pagination?.totalPages}
-                onChange={handlePageChange}
-              />
-            </Stack>
-          </Box>
-        </Stack>
-      </Collapse>
+      <Stack
+        direction="column"
+        sx={{
+          width: drawerOpen ? "360px" : "0px",
+          height: `calc(100vh - ${HEADER_HEIGHT})`,
+          mt: HEADER_HEIGHT,
+          overflow: "hidden",
+          flexShrink: 0,
+          borderRight: "1px solid",
+          borderColor: "divider",
+          transition: "width 0.4s",
+        }}
+      >
+        <FilterBox sort={sort} onSortChange={handleSortChange} />
+        <Box overflow="scroll">
+          <Stack direction="column" alignItems="center" spacing="8px">
+            <QuestionsPagination
+              page={pagination?.currentPage}
+              totalPages={pagination?.totalPages}
+              onChange={handlePageChange}
+            />
+            <QuestionList
+              questions={questions || []}
+              selectedIndex={selectedIndex}
+              onSelectedIndexChange={setSelectedIndex}
+              isLoading={isLoading}
+            />
+            <QuestionsPagination
+              page={pagination?.currentPage}
+              totalPages={pagination?.totalPages}
+              onChange={handlePageChange}
+            />
+          </Stack>
+        </Box>
+      </Stack>
       {questions && selectedIndex !== null && (
         <Box
           sx={{
@@ -130,6 +130,7 @@ function QuestionsPage() {
             p: 3,
             position: "relative",
             mt: HEADER_HEIGHT,
+            minWidth: 0,
           }}
         >
           <QuestionContent question={questions[selectedIndex]} />
