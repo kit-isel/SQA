@@ -1,4 +1,4 @@
-import { Divider, List, ListItem, SxProps, Typography } from "@mui/material";
+import { Divider, List, ListItem, Typography } from "@mui/material";
 import Question from "../types/Question";
 import { Stack } from "@mui/system";
 
@@ -47,7 +47,17 @@ export default function QuestionContent({ question }: QuestionContentProps) {
               my: 2,
             }}
           >
-            <Typography>{answer.description}</Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                width: "100%",
+                overflowWrap: "break-word",
+                wordBreak: "break-all",
+                minWidth: 0,
+              }}
+            >
+              {answer.description}
+            </Typography>
           </ListItem>
         ))}
       </List>

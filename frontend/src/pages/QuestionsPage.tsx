@@ -5,13 +5,8 @@ import {
   AppBar,
   Box,
   Button,
-  Collapse,
-  Divider,
   Fab,
   IconButton,
-  List,
-  ListItem,
-  Slide,
   Stack,
   Toolbar,
   Typography,
@@ -125,6 +120,8 @@ function QuestionsPage() {
       {questions && selectedIndex !== null && (
         <Box
           sx={{
+            height: `calc(100vh - ${HEADER_HEIGHT})`,
+            overflow: "scroll",
             flexGrow: 1,
             bgcolor: "background.default",
             p: 3,
