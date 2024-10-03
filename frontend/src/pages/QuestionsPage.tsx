@@ -130,7 +130,10 @@ function QuestionsPage() {
             minWidth: 0,
           }}
         >
-          <QuestionContent question={questions[selectedIndex]} />
+          <QuestionContent
+            question={questions[selectedIndex]}
+            isLoading={isLoading}
+          />
           <Fab
             color="primary"
             sx={{ position: "absolute", bottom: 16, right: 16 }}

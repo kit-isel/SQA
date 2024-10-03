@@ -2,7 +2,6 @@ import {
   AppBar,
   Box,
   Button,
-  Divider,
   Stack,
   Toolbar,
   Typography,
@@ -65,7 +64,9 @@ export default function QuestionDetailPage() {
           borderColor: "divider",
         }}
       >
-        {question && <QuestionContent question={question} />}
+        {question && (
+          <QuestionContent question={question} isLoading={isLoading} />
+        )}
       </Box>
       <Stack
         direction="column"
