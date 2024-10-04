@@ -5,23 +5,26 @@ import {
   AppBar,
   Box,
   Button,
+  Collapse,
   Divider,
   Fab,
   IconButton,
   List,
   ListItem,
+  Slide,
   Stack,
   Toolbar,
   Typography,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import QuestionList from "../components/QuestionList";
 import FilterBox from "../components/FilterBox";
 import QuestionsPagination from "../components/QuestionsPagination";
 import useQuestions from "../hooks/useQuestions";
+import QuestionContent from "../components/QuestionContent";
 
 const HEADER_HEIGHT = "64px";
 
@@ -31,13 +34,21 @@ function QuestionsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [drawerOpen, setDrawerOpen] = useState(true);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
 
   const { questions, pagination, isLoading } = useQuestions(
     searchParams.get("sort"),
     searchParams.get("page")
   );
+
+  useEffect(() => {
+    if (questions && questions.length > 0) {
+      setSelectedIndex(0);
+    } else {
+      setSelectedIndex(null);
+    }
+  }, [questions]);
 
   const handlePageChange = (page: number) => {
     setSearchParams((prev: URLSearchParams) => {
@@ -79,17 +90,14 @@ function QuestionsPage() {
       <Stack
         direction="column"
         sx={{
-          width: drawerOpen ? 360 : 0,
+          width: drawerOpen ? "360px" : "0px",
           height: `calc(100vh - ${HEADER_HEIGHT})`,
           mt: HEADER_HEIGHT,
           overflow: "hidden",
           flexShrink: 0,
           borderRight: "1px solid",
           borderColor: "divider",
-          transition: theme.transitions.create("width", {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
+          transition: "width 0.4s",
         }}
       >
         <FilterBox sort={sort} onSortChange={handleSortChange} />
@@ -114,41 +122,26 @@ function QuestionsPage() {
           </Stack>
         </Box>
       </Stack>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
-      >
-        <Toolbar />
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{ borderBottom: "1px solid", borderColor: "divider", mb: 2 }}
+      {questions && selectedIndex !== null && (
+        <Box
+          sx={{
+            flexGrow: 1,
+            bgcolor: "background.default",
+            p: 3,
+            position: "relative",
+            mt: HEADER_HEIGHT,
+            minWidth: 0,
+          }}
         >
-          {questions?.[selectedIndex].title}
-        </Typography>
-        <Typography variant="body1">
-          {questions?.[selectedIndex].description}
-        </Typography>
-        <Divider orientation="horizontal" sx={{ width: "100%", my: 4 }} />
-        <List>
-          {questions?.[selectedIndex].answers.map((answer) => (
-            <ListItem
-              key={answer.id}
-              sx={{
-                backgroundColor: "grey.200",
-                borderRadius: 2,
-                p: 2,
-                my: 2,
-              }}
-            >
-              <Typography>{answer.description}</Typography>
-            </ListItem>
-          ))}
-        </List>
-        <Fab color="primary" sx={{ position: "fixed", bottom: 16, right: 16 }}>
-          <CommentIcon />
-        </Fab>
-      </Box>
+          <QuestionContent question={questions[selectedIndex]} />
+          <Fab
+            color="primary"
+            sx={{ position: "absolute", bottom: 16, right: 16 }}
+          >
+            <CommentIcon />
+          </Fab>
+        </Box>
+      )}
     </Box>
   );
 }

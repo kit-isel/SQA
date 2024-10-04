@@ -10,7 +10,7 @@ import Question from "../types/Question";
 
 interface QuestionListProps {
   questions: Question[];
-  selectedIndex: number;
+  selectedIndex: number | null;
   onSelectedIndexChange: (index: number) => void;
   isLoading: boolean;
 }
