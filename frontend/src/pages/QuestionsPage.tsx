@@ -136,7 +136,7 @@ function QuestionsPage() {
           />
           <Fab
             color="primary"
-            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            sx={{ position: "sticky", bottom: 0, left: 0 }}
             href={`/questions/${questions[selectedIndex].id}`}
           >
             <CommentIcon />
