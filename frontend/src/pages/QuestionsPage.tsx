@@ -5,13 +5,8 @@ import {
   AppBar,
   Box,
   Button,
-  Collapse,
-  Divider,
   Fab,
   IconButton,
-  List,
-  ListItem,
-  Slide,
   Stack,
   Toolbar,
   Typography,
@@ -125,6 +120,8 @@ function QuestionsPage() {
       {questions && selectedIndex !== null && (
         <Box
           sx={{
+            height: `calc(100vh - ${HEADER_HEIGHT})`,
+            overflow: "scroll",
             flexGrow: 1,
             bgcolor: "background.default",
             p: 3,
@@ -133,10 +130,14 @@ function QuestionsPage() {
             minWidth: 0,
           }}
         >
-          <QuestionContent question={questions[selectedIndex]} />
+          <QuestionContent
+            question={questions[selectedIndex]}
+            isLoading={isLoading}
+          />
           <Fab
             color="primary"
-            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            sx={{ position: "sticky", bottom: 0, left: 0 }}
+            href={`/questions/${questions[selectedIndex].id}`}
           >
             <CommentIcon />
           </Fab>

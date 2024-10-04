@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      # - ./frontend/dist:/var/www/html
+      - ./frontend/dist:/var/www/html
       - ./web/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - flask
