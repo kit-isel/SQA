@@ -69,7 +69,7 @@ function QuestionsPage() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            学生質問箱
+            学生質問箱 {import.meta.env.VITE_API_URL}
           </Typography>
           <Button
             variant="outlined"

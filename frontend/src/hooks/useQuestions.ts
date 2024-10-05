@@ -33,7 +33,7 @@ export default function useQuestions(sort: string | null, page: string | null) {
     QuestionsFetcherProps
   >(
     {
-      url: "http://localhost:8080/api/v1/questions",
+      url: `http://${import.meta.env.VITE_APP_HOST}/api/v1/questions`,
       sort: sort,
       page: page,
     },
