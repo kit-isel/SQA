@@ -1,4 +1,11 @@
-import { Divider, List, ListItem, Typography, Skeleton } from "@mui/material";
+import {
+  Divider,
+  List,
+  ListItem,
+  Typography,
+  Skeleton,
+  useTheme,
+} from "@mui/material";
 import Question from "../types/Question";
 import { Stack } from "@mui/system";
 
@@ -11,6 +18,7 @@ export default function QuestionContent({
   question,
   isLoading,
 }: QuestionContentProps) {
+  const theme = useTheme();
   return (
     <Stack direction="column" sx={{ maxWidth: "100%", minWidth: 0 }}>
       {isLoading ? (
@@ -61,7 +69,7 @@ export default function QuestionContent({
               <ListItem
                 key={answer.id}
                 sx={{
-                  backgroundColor: "grey.200",
+                  backgroundColor: theme.palette.divider,
                   borderRadius: 2,
                   p: 2,
                   my: 2,

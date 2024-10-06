@@ -59,8 +59,8 @@ function QuestionsPage() {
     setSort(sort);
   };
   return (
-    <Box sx={{ display: "flex" }}>
-      <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+    <Stack height={`calc(100vh)`}>
+      <AppBar position="static">
         <Toolbar>
           <IconButton
             onClick={() => setDrawerOpen(!drawerOpen)}
@@ -69,7 +69,7 @@ function QuestionsPage() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            学生質問箱 {import.meta.env.VITE_API_URL}
+            学生質問箱
           </Typography>
           <Button
             variant="outlined"
@@ -82,68 +82,67 @@ function QuestionsPage() {
           </Button>
         </Toolbar>
       </AppBar>
-      <Stack
-        direction="column"
-        sx={{
-          width: drawerOpen ? "360px" : "0px",
-          height: `calc(100vh - ${HEADER_HEIGHT})`,
-          mt: HEADER_HEIGHT,
-          overflow: "hidden",
-          flexShrink: 0,
-          borderRight: "1px solid",
-          borderColor: "divider",
-          transition: "width 0.4s",
-        }}
-      >
-        <FilterBox sort={sort} onSortChange={handleSortChange} />
-        <Box overflow="scroll">
-          <Stack direction="column" alignItems="center" spacing="8px">
-            <QuestionsPagination
-              page={pagination?.currentPage}
-              totalPages={pagination?.totalPages}
-              onChange={handlePageChange}
-            />
-            <QuestionList
-              questions={questions || []}
-              selectedIndex={selectedIndex}
-              onSelectedIndexChange={setSelectedIndex}
-              isLoading={isLoading}
-            />
-            <QuestionsPagination
-              page={pagination?.currentPage}
-              totalPages={pagination?.totalPages}
-              onChange={handlePageChange}
-            />
-          </Stack>
-        </Box>
-      </Stack>
-      {questions && selectedIndex !== null && (
-        <Box
+      <Stack direction="row" height="100%">
+        <Stack
+          direction="column"
           sx={{
-            height: `calc(100vh - ${HEADER_HEIGHT})`,
-            overflow: "scroll",
-            flexGrow: 1,
-            bgcolor: "background.default",
-            p: 3,
-            position: "relative",
-            mt: HEADER_HEIGHT,
-            minWidth: 0,
+            width: drawerOpen ? "360px" : "0px",
+            height: "100%",
+            overflow: "hidden",
+            flexShrink: 0,
+            borderRight: "1px solid",
+            borderColor: "divider",
+            transition: "width 0.4s",
           }}
         >
-          <QuestionContent
-            question={questions[selectedIndex]}
-            isLoading={isLoading}
-          />
-          <Fab
-            color="primary"
-            sx={{ position: "sticky", bottom: 0, left: 0 }}
-            href={`/questions/${questions[selectedIndex].id}`}
+          <FilterBox sort={sort} onSortChange={handleSortChange} />
+          <Box overflow="scroll">
+            <Stack direction="column" alignItems="center" spacing="8px">
+              <QuestionsPagination
+                page={pagination?.currentPage}
+                totalPages={pagination?.totalPages}
+                onChange={handlePageChange}
+              />
+              <QuestionList
+                questions={questions || []}
+                selectedIndex={selectedIndex}
+                onSelectedIndexChange={setSelectedIndex}
+                isLoading={isLoading}
+              />
+              <QuestionsPagination
+                page={pagination?.currentPage}
+                totalPages={pagination?.totalPages}
+                onChange={handlePageChange}
+              />
+            </Stack>
+          </Box>
+        </Stack>
+        {questions && selectedIndex !== null && (
+          <Box
+            sx={{
+              height: `calc(100% - ${HEADER_HEIGHT})`,
+              overflow: "scroll",
+              flexGrow: 1,
+              bgcolor: "background.default",
+              p: 3,
+              position: "relative",
+            }}
           >
-            <CommentIcon />
-          </Fab>
-        </Box>
-      )}
-    </Box>
+            <QuestionContent
+              question={questions[selectedIndex]}
+              isLoading={isLoading}
+            />
+            <Fab
+              color="primary"
+              sx={{ position: "sticky", bottom: 0, left: 0 }}
+              href={`/questions/${questions[selectedIndex].id}`}
+            >
+              <CommentIcon />
+            </Fab>
+          </Box>
+        )}
+      </Stack>
+    </Stack>
   );
 }
 
