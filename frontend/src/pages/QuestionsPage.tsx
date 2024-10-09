@@ -1,16 +1,13 @@
 import CommentIcon from "@mui/icons-material/Comment";
 import EditIcon from "@mui/icons-material/Edit";
-import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
   Button,
   Fab,
-  IconButton,
   Stack,
   Toolbar,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -24,11 +21,8 @@ import QuestionContent from "../components/QuestionContent";
 const HEADER_HEIGHT = "64px";
 
 function QuestionsPage() {
-  const theme = useTheme();
-
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [drawerOpen, setDrawerOpen] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
 
@@ -62,12 +56,6 @@ function QuestionsPage() {
     <Stack height={`calc(100vh)`}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            onClick={() => setDrawerOpen(!drawerOpen)}
-            sx={{ height: HEADER_HEIGHT }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             学生質問箱
           </Typography>
@@ -86,13 +74,12 @@ function QuestionsPage() {
         <Stack
           direction="column"
           sx={{
-            width: drawerOpen ? "360px" : "0px",
+            width: "40%",
             height: "100%",
             overflow: "hidden",
             flexShrink: 0,
             borderRight: "1px solid",
             borderColor: "divider",
-            transition: "width 0.4s",
           }}
         >
           <FilterBox sort={sort} onSortChange={handleSortChange} />

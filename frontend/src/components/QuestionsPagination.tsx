@@ -13,9 +13,9 @@ export default function QuestionsPagination({
 }: QuestionsPaginationProps) {
   return (
     <Pagination
-      count={totalPages || 1}
+      count={totalPages}
       color="primary"
-      page={page || 1}
+      page={page}
       onChange={(_, page) => onChange(page)}
       sx={{
         "& .MuiPaginationItem-root": {

@@ -37,9 +37,11 @@ export default function useQuestions(sort: string | null, page: string | null) {
       sort: sort,
       page: page,
     },
-    fetcher
+    fetcher,
+    {
+      keepPreviousData: true,
+    }
   );
-  console.log(data);
 
   return {
     questions: data?.questions,
