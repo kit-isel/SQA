@@ -1,6 +1,6 @@
 from app import crud
 from app.constants import *
-from app.crud import SortType
+from app.crud import FilterType, SortType
 from flask import Blueprint, jsonify, request
 
 bp = Blueprint("routes", __name__)
@@ -42,11 +42,20 @@ def get_questions():
 
     # pageパラメータの処理
     page_param = request.args.get("page", default=1, type=int)
-    total_pages = crud.read_questions_total_pages(pagesize_param)
+
+    # filterパラメータの処理
+    filters_param = request.args.get("filters", default=None, type=FilterType.from_str)
+
+    questions, total_pages = crud.read_questions_by_page(
+        sort_param,
+        page_param,
+        pagesize_param,
+        filters_param,
+    )
+
     if page_param > total_pages:
         return jsonify({"error": "page not found"}), 404
 
-    questions = crud.read_questions(sort_param, page_param, pagesize_param)
     return (
         jsonify(
             {

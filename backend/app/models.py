@@ -3,7 +3,7 @@ from app.database import db
 from flask import current_app
 from sqlalchemy import TEXT as Text
 from sqlalchemy import VARCHAR as Varchar
-from sqlalchemy import Boolean, Column, ForeignKey, Integer
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, func
 from sqlalchemy.dialects.mysql import TIMESTAMP as Timestamp
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import current_timestamp
@@ -29,6 +29,14 @@ class Question(db.Model):
     @hybrid_property
     def answer_counts(self):
         return len(self.answers)
+
+    @answer_counts.expression
+    def answer_counts(cls):
+        return (
+            db.session.query(func.count(Answer.id))
+            .filter(Answer.question_id == cls.id)
+            .label("answer_counts")
+        )
 
     def to_dict(self):
         return {

@@ -51,6 +51,8 @@ class TestGetQuestions:
         case2: sort=newest
         case3: sort=oldest
         case4: pagesizeが有効な範囲内
+        case5: filter=noanswer
+
     """
 
     def test_with_valid_data(self, client):
@@ -103,6 +105,13 @@ class TestGetQuestions:
         # レスポンスの確認
         assert response.status_code == 200
         assert len(response.json["questions"]) == pagesize
+
+    def test_with_filter_noanswers(self, client):
+        response = client.get("/questions?filters=noanswers")
+        # レスポンスの確認
+        assert response.status_code == 200
+        for q in response.json["questions"]:
+            assert len(q["answers"]) == 0
 
     """
     無効なデータを送信した場合
