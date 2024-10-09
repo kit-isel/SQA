@@ -1,5 +1,5 @@
 import pytest
-from app.constants import DESCRIPTION_MAX_LENGTH, TITLE_MAX_LENGTH
+from app.constants import MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH
 from app.database import db
 from app.models import Question
 from flask import current_app
@@ -42,8 +42,8 @@ class TestPostAsk:
         data_size = 30
         data = [
             {
-                "title": f"a" * TITLE_MAX_LENGTH,
-                "description": f"a" * DESCRIPTION_MAX_LENGTH,
+                "title": f"a" * MAX_TITLE_LENGTH,
+                "description": f"a" * MAX_DESCRIPTION_LENGTH,
             }
             for i in range(data_size)
         ]
@@ -103,7 +103,7 @@ class TestPostAsk:
         response = client.post(
             "/questions",
             json={
-                "title": "a" * (TITLE_MAX_LENGTH + 1),
+                "title": "a" * (MAX_TITLE_LENGTH + 1),
                 "description": "description",
             },
         )
@@ -115,7 +115,7 @@ class TestPostAsk:
             "/questions",
             json={
                 "title": "title",
-                "description": "a" * (DESCRIPTION_MAX_LENGTH + 1),
+                "description": "a" * (MAX_DESCRIPTION_LENGTH + 1),
             },
         )
         assert response.status_code == 400

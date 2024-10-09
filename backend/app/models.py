@@ -1,4 +1,4 @@
-from app.constants import TITLE_MAX_LENGTH
+from app.constants import MAX_TITLE_LENGTH
 from app.database import db
 from flask import current_app
 from sqlalchemy import TEXT as Text
@@ -13,7 +13,7 @@ class Question(db.Model):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(Varchar(TITLE_MAX_LENGTH))
+    title = Column(Varchar(MAX_TITLE_LENGTH))
     description = Column(Text)
     status = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)

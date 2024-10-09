@@ -2,7 +2,6 @@ import sys
 from enum import StrEnum, auto
 from typing import Self
 
-from app.constants import PER_PAGE
 from app.database import db
 from app.models import Answer, Question
 from sqlalchemy import func
@@ -47,6 +46,7 @@ def create_question(title: str, description: str) -> Question:
 def read_questions(
     sort_type: SortType,
     page: int,
+    pagesize: int,
     include_deleted: bool = False,
 ) -> list[Question]:
     query = Question.query
@@ -58,18 +58,18 @@ def read_questions(
         case SortType.OLDEST:
             query = query.order_by(Question.created_at.asc())
 
-    pagination = query.paginate(page=page, per_page=PER_PAGE, error_out=False)
+    pagination = query.paginate(page=page, per_page=pagesize, error_out=False)
 
     return pagination.items
 
 
 # questionsの総ページ数を取得
-def read_questions_total_pages(include_deleted: bool = False) -> int:
+def read_questions_total_pages(page_size: int, include_deleted: bool = False) -> int:
     query = db.session.query(func.count(Question.id))
     if not include_deleted:
         query = query.filter(Question.deleted == False)
     total_questions = query.scalar()
-    total_pages = (total_questions - 1) // PER_PAGE + 1
+    total_pages = (total_questions - 1) // page_size + 1
     return total_pages if total_pages > 0 else 1
 
 
