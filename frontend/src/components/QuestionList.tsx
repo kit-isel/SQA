@@ -37,8 +37,7 @@ function QuestionList({
       {isLoading
         ? Array.from({ length: 10 }).map((_, index) => (
             <ListItem key={index}>
-              <Skeleton variant="text" />
-              <Skeleton variant="text" />
+              <ListItemText primary={<Skeleton />} secondary={<Skeleton />} />
             </ListItem>
           ))
         : questions.map((question, index) => (
@@ -49,6 +48,7 @@ function QuestionList({
                 borderBottom: 1,
                 borderColor: "divider",
               }}
+              onMouseEnter={() => onSelectedIndexChange(index)}
             >
               <ListItemButton
                 selected={selectedIndex === index}
