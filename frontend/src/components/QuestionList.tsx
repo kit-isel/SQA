@@ -48,7 +48,6 @@ function QuestionList({
                 borderBottom: 1,
                 borderColor: "divider",
               }}
-              onMouseEnter={() => onSelectedIndexChange(index)}
             >
               <ListItemButton
                 selected={selectedIndex === index}

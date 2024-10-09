@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import QuestionList from "../components/QuestionList";
-import FilterBox from "../components/FilterBox";
+import FilterBox, { FilterConfig } from "../components/FilterBox";
 import QuestionsPagination from "../components/QuestionsPagination";
 import useQuestions from "../hooks/useQuestions";
 import QuestionContent from "../components/QuestionContent";
@@ -24,11 +24,17 @@ function QuestionsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [sort, setSort] = useState(searchParams.get("sort") || "newest");
+  const [filterConfig, setFilterConfig] = useState<FilterConfig>({
+    sort: searchParams.get("sort") || "newest",
+    pagesize: parseInt(searchParams.get("pagesize") || "15"),
+    noanswers: searchParams.get("filters") === "noanswers",
+  });
 
   const { questions, pagination, isLoading } = useQuestions(
     searchParams.get("sort"),
-    searchParams.get("page")
+    searchParams.get("page"),
+    searchParams.get("pagesize"),
+    searchParams.get("filters")
   );
 
   useEffect(() => {
@@ -45,15 +51,17 @@ function QuestionsPage() {
       return prev;
     });
   };
-  const handleSortChange = (sort: string) => {
+  const handleFilterApply = () => {
     setSearchParams((prev: URLSearchParams) => {
-      prev.set("sort", sort);
+      prev.set("page", "1");
+      prev.set("sort", filterConfig.sort);
+      prev.set("pagesize", filterConfig.pagesize.toString());
+      prev.set("filters", filterConfig.noanswers ? "noanswers" : "");
       return prev;
     });
-    setSort(sort);
   };
   return (
-    <Stack height={`calc(100vh)`}>
+    <Stack height={`calc(100vh - ${HEADER_HEIGHT})`}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -82,7 +90,11 @@ function QuestionsPage() {
             borderColor: "divider",
           }}
         >
-          <FilterBox sort={sort} onSortChange={handleSortChange} />
+          <FilterBox
+            config={filterConfig}
+            onConfigChange={setFilterConfig}
+            onApply={handleFilterApply}
+          />
           <Box overflow="scroll">
             <Stack direction="column" alignItems="center" spacing="8px">
               <QuestionsPagination

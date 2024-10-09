@@ -2,6 +2,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -9,16 +10,29 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface FilterBoxProps {
-  sort: string;
-  onSortChange: (sort: string) => void;
+  config: FilterConfig;
+  onConfigChange: (config: FilterConfig) => void;
+  onApply: () => void;
 }
 
-export default function FilterBox({ sort, onSortChange }: FilterBoxProps) {
+export interface FilterConfig {
+  sort: string;
+  pagesize: number;
+  noanswers: boolean;
+}
+
+export default function FilterBox({
+  config,
+  onConfigChange,
+  onApply,
+}: FilterBoxProps) {
   return (
     <Accordion disableGutters sx={{ width: "100%" }}>
       <AccordionSummary
@@ -29,38 +43,64 @@ export default function FilterBox({ sort, onSortChange }: FilterBoxProps) {
         <Typography>ソート・フィルター</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>
-          <FormControl>
-            <FormLabel id="created-at-radio-group-label">ソート</FormLabel>
-            <RadioGroup
-              aria-labelledby="created-at-radio-group-label"
-              defaultValue="newest"
-              name="created-at-radio-button-group"
-              value={sort}
-              onChange={(event) => onSortChange(event.target.value)}
-            >
-              <FormControlLabel
-                value="newest"
-                control={<Radio />}
-                label="Newest"
-              />
-              <FormControlLabel
-                value="oldest"
-                control={<Radio />}
-                label="Oldest"
-              />
-            </RadioGroup>
-          </FormControl>
-          <FormControl>
-            <FormLabel component="legend">フィルター</FormLabel>
-            <FormGroup>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="未回答"
-              />
-            </FormGroup>
-          </FormControl>
-        </Typography>
+        <FormControl>
+          <FormLabel id="created-at-radio-group-label">ソート</FormLabel>
+          <RadioGroup
+            aria-labelledby="created-at-radio-group-label"
+            defaultValue="newest"
+            name="created-at-radio-button-group"
+            value={config.sort}
+            onChange={(event) =>
+              onConfigChange({ ...config, sort: event.target.value })
+            }
+          >
+            <FormControlLabel
+              value="newest"
+              control={<Radio />}
+              label="Newest"
+            />
+            <FormControlLabel
+              value="oldest"
+              control={<Radio />}
+              label="Oldest"
+            />
+          </RadioGroup>
+        </FormControl>
+        <FormControl>
+          <FormLabel component="legend">フィルター</FormLabel>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={config.noanswers}
+                  onChange={(event) => {
+                    onConfigChange({
+                      ...config,
+                      noanswers: event.target.checked,
+                    });
+                  }}
+                />
+              }
+              label="未回答"
+            />
+          </FormGroup>
+        </FormControl>
+        <Typography>表示件数</Typography>
+        <ToggleButtonGroup
+          value={config.pagesize}
+          exclusive
+          color="primary"
+          onChange={(_, value) =>
+            onConfigChange({ ...config, pagesize: value })
+          }
+          fullWidth
+        >
+          <ToggleButton value={5}>5</ToggleButton>
+          <ToggleButton value={15}>15</ToggleButton>
+          <ToggleButton value={30}>30</ToggleButton>
+          <ToggleButton value={50}>50</ToggleButton>
+        </ToggleButtonGroup>
+        <Button onClick={onApply}>適用</Button>
       </AccordionDetails>
     </Accordion>
   );
