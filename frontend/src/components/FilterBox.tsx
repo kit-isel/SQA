@@ -10,6 +10,7 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  SxProps,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
@@ -20,6 +21,7 @@ interface FilterBoxProps {
   config: FilterConfig;
   onConfigChange: (config: FilterConfig) => void;
   onApply: () => void;
+  sx?: SxProps;
 }
 
 export interface FilterConfig {
@@ -32,13 +34,15 @@ export default function FilterBox({
   config,
   onConfigChange,
   onApply,
+  sx,
 }: FilterBoxProps) {
   return (
-    <Accordion disableGutters sx={{ width: "100%" }}>
+    <Accordion disableGutters sx={sx} defaultExpanded>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"
         id="panel1-header"
+        sx={{ display: { xs: "flex", sm: "none" } }}
       >
         <Typography>ソート・フィルター</Typography>
       </AccordionSummary>

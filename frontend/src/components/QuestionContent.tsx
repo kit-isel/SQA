@@ -7,20 +7,22 @@ import {
   useTheme,
 } from "@mui/material";
 import Question from "../types/Question";
-import { Stack } from "@mui/system";
+import { Stack, SxProps } from "@mui/system";
 
 interface QuestionContentProps {
   question: Question;
   isLoading: boolean;
+  sx?: SxProps;
 }
 
 export default function QuestionContent({
   question,
   isLoading,
+  sx,
 }: QuestionContentProps) {
   const theme = useTheme();
   return (
-    <Stack direction="column" sx={{ maxWidth: "100%", minWidth: 0 }}>
+    <Stack direction="column" sx={sx}>
       {isLoading ? (
         <>
           <Skeleton variant="text" />

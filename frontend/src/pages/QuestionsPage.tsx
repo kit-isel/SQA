@@ -1,13 +1,13 @@
-import CommentIcon from "@mui/icons-material/Comment";
 import EditIcon from "@mui/icons-material/Edit";
 import {
   AppBar,
   Box,
   Button,
-  Fab,
+  Divider,
   Stack,
   Toolbar,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -16,11 +16,12 @@ import QuestionList from "../components/QuestionList";
 import FilterBox, { FilterConfig } from "../components/FilterBox";
 import QuestionsPagination from "../components/QuestionsPagination";
 import useQuestions from "../hooks/useQuestions";
-import QuestionContent from "../components/QuestionContent";
+import QuestionPreview from "../components/QuestionPreview";
 
 const HEADER_HEIGHT = "64px";
 
 function QuestionsPage() {
+  const theme = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -61,8 +62,8 @@ function QuestionsPage() {
     });
   };
   return (
-    <Stack height={`calc(100vh - ${HEADER_HEIGHT})`}>
-      <AppBar position="static">
+    <Box>
+      <AppBar position="sticky">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             学生質問箱
@@ -78,70 +79,65 @@ function QuestionsPage() {
           </Button>
         </Toolbar>
       </AppBar>
-      <Stack direction="row" height="100%">
-        <Stack
-          direction="column"
+      <Stack
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
+        spacing={theme.spacing(2)}
+        p={theme.spacing(2)}
+      >
+        <FilterBox
+          config={filterConfig}
+          onConfigChange={setFilterConfig}
+          onApply={handleFilterApply}
           sx={{
-            width: "40%",
-            height: "100%",
-            overflow: "hidden",
-            flexShrink: 0,
-            borderRight: "1px solid",
-            borderColor: "divider",
+            width: "25%",
+            height: "fit-content",
+            position: "sticky",
+            top: `calc(${HEADER_HEIGHT} + ${theme.spacing(2)})`,
           }}
-        >
-          <FilterBox
-            config={filterConfig}
-            onConfigChange={setFilterConfig}
-            onApply={handleFilterApply}
+        />
+        <Stack direction="column" alignItems="center" width={"50%"}>
+          <Typography variant="h4">質問一覧</Typography>
+          <QuestionsPagination
+            page={pagination?.currentPage}
+            totalPages={pagination?.totalPages}
+            onChange={handlePageChange}
+            sx={{
+              py: theme.spacing(2),
+            }}
           />
-          <Box overflow="scroll">
-            <Stack direction="column" alignItems="center" spacing="8px">
-              <QuestionsPagination
-                page={pagination?.currentPage}
-                totalPages={pagination?.totalPages}
-                onChange={handlePageChange}
-              />
-              <QuestionList
-                questions={questions || []}
-                selectedIndex={selectedIndex}
-                onSelectedIndexChange={setSelectedIndex}
-                isLoading={isLoading}
-              />
-              <QuestionsPagination
-                page={pagination?.currentPage}
-                totalPages={pagination?.totalPages}
-                onChange={handlePageChange}
-              />
-            </Stack>
-          </Box>
+          <QuestionList
+            questions={questions || []}
+            selectedIndex={selectedIndex}
+            onHoverIndexChange={setSelectedIndex}
+            href={(id: string) => `/questions/${id}`}
+            isLoading={isLoading}
+            sx={{
+              width: "100%",
+            }}
+          />
+          <QuestionsPagination
+            page={pagination?.currentPage}
+            totalPages={pagination?.totalPages}
+            onChange={handlePageChange}
+            sx={{
+              py: theme.spacing(2),
+            }}
+          />
         </Stack>
         {questions && selectedIndex !== null && (
-          <Box
+          <QuestionPreview
+            question={questions[selectedIndex]}
             sx={{
-              height: `calc(100% - ${HEADER_HEIGHT})`,
-              overflow: "scroll",
-              flexGrow: 1,
-              bgcolor: "background.default",
-              p: 3,
-              position: "relative",
+              width: "25%",
+              height: "fit-content",
+              position: "sticky",
+              top: `calc(${HEADER_HEIGHT} + ${theme.spacing(2)})`,
             }}
-          >
-            <QuestionContent
-              question={questions[selectedIndex]}
-              isLoading={isLoading}
-            />
-            <Fab
-              color="primary"
-              sx={{ position: "sticky", bottom: 0, left: 0 }}
-              href={`/questions/${questions[selectedIndex].id}`}
-            >
-              <CommentIcon />
-            </Fab>
-          </Box>
+          />
         )}
       </Stack>
-    </Stack>
+    </Box>
   );
 }
 

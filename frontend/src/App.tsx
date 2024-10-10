@@ -6,6 +6,7 @@ import QuestionDetailPage from "./pages/QuestionDetailPage";
 import { createTheme, CssBaseline, useMediaQuery } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { useMemo } from "react";
+import { blueGrey, grey } from "@mui/material/colors";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -23,7 +24,8 @@ function App() {
     () =>
       createTheme({
         palette: {
-          mode: isDarkMode ? "dark" : "light",
+          // mode: isDarkMode ? "dark" : "light",
+          mode: "light",
         },
       }),
     [isDarkMode]

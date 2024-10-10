@@ -1,9 +1,14 @@
 import {
-  List,
-  ListItem,
   Skeleton,
-  ListItemButton,
-  ListItemText,
+  SxProps,
+  Stack,
+  Card,
+  CardContent,
+  Typography,
+  useTheme,
+  CardActionArea,
+  Box,
+  alpha,
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
 import Question from "../types/Question";
@@ -11,75 +16,92 @@ import Question from "../types/Question";
 interface QuestionListProps {
   questions: Question[];
   selectedIndex: number | null;
-  onSelectedIndexChange: (index: number) => void;
+  onHoverIndexChange: (index: number | null) => void;
+  href: (id: string) => string;
   isLoading: boolean;
+  sx?: SxProps;
 }
 
 function QuestionList({
   questions,
   selectedIndex,
-  onSelectedIndexChange,
+  onHoverIndexChange,
+  href,
   isLoading,
+  sx,
 }: QuestionListProps) {
+  const theme = useTheme();
   return (
-    <List
-      disablePadding
-      sx={{
-        width: "100%",
-        height: "100%",
-        borderTop: 1,
-        borderColor: "divider",
-        "&.MuiList-root": {
-          margin: 0,
-        },
-      }}
-    >
+    <Stack direction="column" sx={sx} spacing={theme.spacing(2)}>
       {isLoading
         ? Array.from({ length: 10 }).map((_, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={<Skeleton />} secondary={<Skeleton />} />
-            </ListItem>
+            <Card key={index} sx={{ height: "96px", p: "8px" }}>
+              <Skeleton variant="text" />
+              <Skeleton variant="text" />
+              <Skeleton variant="text" />
+            </Card>
           ))
         : questions.map((question, index) => (
-            <ListItem
+            <Card
               key={question.id}
-              disablePadding
               sx={{
-                borderBottom: 1,
-                borderColor: "divider",
+                minHeight: "96px",
               }}
             >
-              <ListItemButton
-                selected={selectedIndex === index}
-                onClick={() => onSelectedIndexChange(index)}
+              <CardActionArea
+                component="a"
+                href={href(`${question.id}`)}
+                onMouseEnter={() => onHoverIndexChange(index)}
+                sx={{
+                  display: "flex",
+                }}
               >
-                <ListItemText
-                  primary={question.title}
-                  secondary={question.description}
-                  primaryTypographyProps={{
-                    variant: "h6",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    display: "-webkit-box",
+                <CardContent sx={{ flex: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {question.createdAt}
+                  </Typography>
+                  <Typography variant="h6">{question.title}</Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "normal",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical",
+                      maxHeight: "96px",
+                    }}
+                  >
+                    {question.description}
+                  </Typography>
+                </CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "72px",
+                    minHeight: "72px",
+                    borderLeft: 1,
+                    borderColor: "divider",
+                    padding: theme.spacing(1),
                   }}
-                  secondaryTypographyProps={{
-                    variant: "body1",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    display: "-webkit-box",
-                  }}
-                  sx={{ width: "80%" }}
-                />
-                <CommentIcon color="primary" />
-                <ListItemText
-                  primary={question.answerCounts.toString().padStart(2, "0")}
-                />
-              </ListItemButton>
-            </ListItem>
+                >
+                  <CommentIcon
+                    color={question.answerCounts > 0 ? "primary" : "disabled"}
+                  />
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mx: theme.spacing(1) }}
+                  >
+                    {question.answerCounts > 99 ? "99+" : question.answerCounts}
+                  </Typography>
+                </Box>
+              </CardActionArea>
+            </Card>
           ))}
-    </List>
+    </Stack>
   );
 }
 export default QuestionList;
