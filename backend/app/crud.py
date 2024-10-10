@@ -2,9 +2,9 @@ import sys
 from enum import StrEnum, auto
 from typing import Self
 
-from app.constants import PER_PAGE
 from app.database import db
 from app.models import Answer, Question
+from flask_sqlalchemy.pagination import Pagination
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -23,6 +23,17 @@ class SortType(StrEnum):
             return cls[value.upper()]
         except KeyError:
             return cls.default()
+
+
+class FilterType(StrEnum):
+    NOANSWERS = auto()
+
+    @classmethod
+    def from_str(cls, value: str):
+        try:
+            return cls[value.upper()]
+        except KeyError:
+            return None
 
 
 def commit():
@@ -44,32 +55,35 @@ def create_question(title: str, description: str) -> Question:
 
 
 # questionを全て取得
-def read_questions(
+def read_questions_by_page(
     sort_type: SortType,
     page: int,
+    pagesize: int,
+    filter_type: FilterType,
     include_deleted: bool = False,
-) -> list[Question]:
+) -> tuple[list[Question], int]:
     query = Question.query
     if not include_deleted:
         query = query.filter(Question.deleted == False)
-    match sort_type:
-        case SortType.NEWEST:
-            query = query.order_by(Question.created_at.desc())
-        case SortType.OLDEST:
-            query = query.order_by(Question.created_at.asc())
+    if sort_type == SortType.NEWEST:
+        query = query.order_by(Question.created_at.desc())
+    elif sort_type == SortType.OLDEST:
+        query = query.order_by(Question.created_at.asc())
+    if filter_type == FilterType.NOANSWERS:
+        query = query.filter(Question.answer_counts == 0)
 
-    pagination = query.paginate(page=page, per_page=PER_PAGE, error_out=False)
+    pagination = query.paginate(page=page, per_page=pagesize, error_out=False)
 
-    return pagination.items
+    return pagination.items, pagination.pages
 
 
 # questionsの総ページ数を取得
-def read_questions_total_pages(include_deleted: bool = False) -> int:
+def read_questions_total_pages(page_size: int, include_deleted: bool = False) -> int:
     query = db.session.query(func.count(Question.id))
     if not include_deleted:
         query = query.filter(Question.deleted == False)
     total_questions = query.scalar()
-    total_pages = (total_questions - 1) // PER_PAGE + 1
+    total_pages = (total_questions - 1) // page_size + 1
     return total_pages if total_pages > 0 else 1
 
 

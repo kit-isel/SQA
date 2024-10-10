@@ -13,7 +13,7 @@ const fetcher = ({ url, id }: FetcherProps) => {
 export default function useQuestionById(id: string) {
   const { data, error, isLoading } = useSWR<Question, any, FetcherProps>(
     {
-      url: "http://localhost:8080/api/v1/questions",
+      url: `http://${import.meta.env.VITE_APP_HOST}/api/v1/questions`,
       id,
     },
     fetcher

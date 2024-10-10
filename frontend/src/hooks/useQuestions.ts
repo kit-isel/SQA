@@ -13,9 +13,17 @@ interface QuestionsFetcherProps {
   url: string;
   sort: string | null;
   page: string | null;
+  pagesize: string | null;
+  filters: string | null;
 }
 
-const fetcher = ({ url, sort, page }: QuestionsFetcherProps) => {
+const fetcher = ({
+  url,
+  sort,
+  page,
+  pagesize,
+  filters,
+}: QuestionsFetcherProps) => {
   const query = new URLSearchParams();
   if (sort) {
     query.append("sort", sort);
@@ -23,23 +31,39 @@ const fetcher = ({ url, sort, page }: QuestionsFetcherProps) => {
   if (page) {
     query.append("page", page);
   }
+  if (pagesize) {
+    query.append("pagesize", pagesize);
+  }
+  if (filters) {
+    query.append("filters", filters);
+  }
+
   return fetch(`${url}?${query.toString()}`).then((res) => res.json());
 };
 
-export default function useQuestions(sort: string | null, page: string | null) {
+export default function useQuestions(
+  sort: string | null,
+  page: string | null,
+  pagesize: string | null,
+  filters: string | null
+) {
   const { data, error, isLoading } = useSWR<
     QuestionsResponse,
     any,
     QuestionsFetcherProps
   >(
     {
-      url: "http://localhost:8080/api/v1/questions",
-      sort: sort,
-      page: page,
+      url: `http://${import.meta.env.VITE_APP_HOST}/api/v1/questions`,
+      sort,
+      page,
+      pagesize,
+      filters,
     },
-    fetcher
+    fetcher,
+    {
+      keepPreviousData: true,
+    }
   );
-  console.log(data);
 
   return {
     questions: data?.questions,
