@@ -1,7 +1,7 @@
 import random
 
 import pytest
-from app.constants import DESCRIPTION_MAX_LENGTH
+from app.constants import MAX_DESCRIPTION_LENGTH
 from app.database import db
 from app.models import Answer, Question
 from flask.testing import FlaskClient
@@ -60,7 +60,7 @@ class TestPostAnswer:
         data = [
             {
                 "questionId": i % 4 + 1,
-                "description": f"a" * DESCRIPTION_MAX_LENGTH,
+                "description": f"a" * MAX_DESCRIPTION_LENGTH,
             }
             for i in range(data_size)
         ]
@@ -121,7 +121,7 @@ class TestPostAnswer:
     def test_with_long_description(self, client: FlaskClient):
         response = client.post(
             "/questions/1/answers",
-            json={"description": f"a" * (DESCRIPTION_MAX_LENGTH + 1)},
+            json={"description": f"a" * (MAX_DESCRIPTION_LENGTH + 1)},
         )
         assert response.status_code == 400
         assert response.json.get("error") is not None

@@ -1,9 +1,9 @@
-from app.constants import TITLE_MAX_LENGTH
+from app.constants import MAX_TITLE_LENGTH
 from app.database import db
 from flask import current_app
 from sqlalchemy import TEXT as Text
 from sqlalchemy import VARCHAR as Varchar
-from sqlalchemy import Boolean, Column, ForeignKey, Integer
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, func
 from sqlalchemy.dialects.mysql import TIMESTAMP as Timestamp
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import current_timestamp
@@ -13,7 +13,7 @@ class Question(db.Model):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(Varchar(TITLE_MAX_LENGTH))
+    title = Column(Varchar(MAX_TITLE_LENGTH))
     description = Column(Text)
     status = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
@@ -29,6 +29,14 @@ class Question(db.Model):
     @hybrid_property
     def answer_counts(self):
         return len(self.answers)
+
+    @answer_counts.expression
+    def answer_counts(cls):
+        return (
+            db.session.query(func.count(Answer.id))
+            .filter(Answer.question_id == cls.id)
+            .label("answer_counts")
+        )
 
     def to_dict(self):
         return {
